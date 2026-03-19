@@ -6,12 +6,14 @@ use Error;
 use Illuminate\Container\Container;
 use Illuminate\Events\Dispatcher;
 use Illuminate\Database\Capsule\Manager as Capsule;
+use Src\Auth\Auth;
 
 class Application
 {
     private Settings $settings;
     private Route $route;
     private Capsule $dbManager;
+    private Auth $auth;
 
     public function __construct(Settings $settings)
     {
@@ -29,6 +31,7 @@ class Application
         //Инициализация класса пользователя на основе настроек приложения
         $this->auth::init(new $this->settings->app['identity']);
     }
+
     public function __get($key)
     {
         switch ($key) {
@@ -36,9 +39,10 @@ class Application
                 return $this->settings;
             case 'route':
                 return $this->route;
-            default:
-                throw new Error('Accessing a non-existent property');
+            case 'auth':
+                return $this->auth;
         }
+        throw new Error('Accessing a non-existent property');
     }
 
     private function dbRun()
@@ -51,8 +55,7 @@ class Application
 
     public function run(): void
     {
-        $this->dbRun();
-        $this->route->setPrefix($this->settings->getRootPath());
+        //Запуск маршрутизации
         $this->route->start();
     }
 }
