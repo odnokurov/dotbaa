@@ -1,5 +1,6 @@
 .idea
 vendor
+composer.lock
 config/db.php
 access.log
 error.log

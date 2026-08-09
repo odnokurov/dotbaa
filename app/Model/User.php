@@ -10,6 +10,8 @@ class User extends Model implements IdentityInterface
 {
     use HasFactory;
 
+    protected $primaryKey = 'user_id';
+
     public $timestamps = false;
     protected $fillable = [
         'name',
@@ -28,13 +30,13 @@ class User extends Model implements IdentityInterface
     //Выборка пользователя по первичному ключу
     public function findIdentity(int $id)
     {
-        return self::where('id', $id)->first();
+        return self::where('user_id', $id)->first();
     }
 
     //Возврат первичного ключа
     public function getId(): int
     {
-        return $this->id;
+        return $this->user_id;
     }
 
     //Возврат аутентифицированного пользователя
