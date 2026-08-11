@@ -19,12 +19,15 @@ class AdminController
 
             // Валидация входящих полей
             $validator = new Validator($request->all(), [
-                'surname' => ['required'],
-                'name' => ['required'],
-                'login' => ['required', 'unique:users,login'],
-                'password' => ['required']
+                'surname' => ['required', 'alpha', 'min_length:2', 'max_length:100'],
+                'name' => ['required', 'alpha', 'min_length:2', 'max_length:100'],
+                'login' => ['required', 'min_length:3', 'max_length:50', 'unique:users,login'],
+                'password' => ['required', 'min_length:4', 'max_length:255']
             ], [
-                'required' => 'Поле :field пусто',
+                'required' => 'Поле :field обязательно',
+                'alpha' => 'Поле :field должно содержать только буквы',
+                'min_length' => 'Поле :field должно содержать минимум :min символов',
+                'max_length' => 'Поле :field не должно превышать :max символов',
                 'unique' => 'Поле :field должно быть уникально'
             ]);
 

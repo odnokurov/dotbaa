@@ -6,6 +6,7 @@
     <?php endif; ?>
 
     <form method="POST">
+        <input name="csrf_token" type="hidden" value="<?= app()->auth::generateCSRF() ?>"/>
         <div class="mb-3">
             <label class="form-label">Группа</label>
             <select name="group_id" class="form-select" required>

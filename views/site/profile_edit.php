@@ -18,6 +18,7 @@
     </div>
 
     <form method="POST" enctype="multipart/form-data" action="<?= app()->route->getUrl('/profile/update') ?>">
+        <input name="csrf_token" type="hidden" value="<?= app()->auth::generateCSRF() ?>"/>
         <div class="mb-3">
             <label class="form-label">Фамилия</label>
             <input type="text" name="surname" class="form-control" value="<?= htmlspecialchars($user->surname) ?>" required>

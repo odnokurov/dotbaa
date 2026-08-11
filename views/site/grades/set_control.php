@@ -18,6 +18,7 @@
     <?php if ($groupId && $syllabuses->isNotEmpty()): ?>
         <h3>Дисциплины группы</h3>
         <form method="POST">
+            <input name="csrf_token" type="hidden" value="<?= app()->auth::generateCSRF() ?>"/>
             <div class="table-responsive">
                 <table class="table table-striped table-hover data-table">
                     <thead>

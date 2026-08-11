@@ -33,6 +33,7 @@
         <?php if ($students->isNotEmpty()): ?>
             <?php if ($scheduleId): ?>
                 <form method="POST">
+                    <input name="csrf_token" type="hidden" value="<?= app()->auth::generateCSRF() ?>"/>
                     <input type="hidden" name="group_id" value="<?= $groupId ?>">
                     <input type="hidden" name="subject_id" value="<?= $subjectId ?>">
                     <input type="hidden" name="schedule_id" value="<?= $scheduleId ?>">

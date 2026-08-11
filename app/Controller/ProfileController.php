@@ -41,10 +41,13 @@ class ProfileController
         }
 
         $validator = new Validator($request->all(), [
-            'surname' => ['required'],
-            'name' => ['required'],
+            'surname' => ['required', 'alpha', 'min_length:2', 'max_length:100'],
+            'name' => ['required', 'alpha', 'min_length:2', 'max_length:100'],
         ], [
-            'required' => 'Поле :field обязательно'
+            'required' => 'Поле :field обязательно',
+            'alpha' => 'Поле :field должно содержать только буквы',
+            'min_length' => 'Поле :field должно содержать минимум :min символов',
+            'max_length' => 'Поле :field не должно превышать :max символов'
         ]);
 
         if ($validator->fails()) {

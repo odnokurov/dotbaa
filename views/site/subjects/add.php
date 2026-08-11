@@ -6,6 +6,7 @@
     <?php endif; ?>
 
     <form method="post">
+        <input name="csrf_token" type="hidden" value="<?= app()->auth::generateCSRF() ?>"/>
         <div class="mb-3">
             <label class="form-label">Название дисциплины</label>
             <input type="text" name="subject_name" class="form-control" required>
