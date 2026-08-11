@@ -41,6 +41,22 @@ class DeaneryController
         return new View('site.groups.add');
     }
 
+    // Просмотр всех групп
+    public function groups(Request $request): string
+    {
+        return new View('site.groups.index', [
+            'groups' => Group::withCount('students')->get()
+        ]);
+    }
+
+    // Просмотр всех студентов
+    public function students(Request $request): string
+    {
+        return new View('site.students.index', [
+            'students' => Student::with('group')->get()
+        ]);
+    }
+
     // Добавление дисциплин
     public function addSubject(Request $request): string
     {
