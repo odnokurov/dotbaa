@@ -2,33 +2,33 @@
 
 namespace Model;
 
-class Grade
+use Illuminate\Database\Eloquent\Model;
+
+class Grade extends Model
 {
-    private static $db;
+    protected $table = 'grades';
+    protected $primaryKey = 'grade_id';
+    public $timestamps = false;
 
-    public static function setDb($db)
+    protected $fillable = [
+        'grade',
+        'group_id',
+        'student_id',
+        'schedule_id'
+    ];
+
+    public function student()
     {
-        self::$db = $db;
+        return $this->belongsTo(Student::class, 'student_id');
     }
 
-    public static function save($studentId, $scheduleId, $grade)
+    public function group()
     {
-        $stmt = self::$db->prepare("
-            INSERT INTO grades (grade, student_id, schedule_id) 
-            VALUES (?, ?, ?)
-            ON DUPLICATE KEY UPDATE grade = ?
-        ");
-        return $stmt->execute([$grade, $studentId, $scheduleId, $grade]);
+        return $this->belongsTo(Group::class, 'group_id');
     }
 
-    public static function getBySchedule($scheduleId)
+    public function schedule()
     {
-        $stmt = self::$db->prepare("
-            SELECT student_id, grade 
-            FROM grades 
-            WHERE schedule_id = ?
-        ");
-        $stmt->execute([$scheduleId]);
-        return $stmt->fetchAll(\PDO::FETCH_KEY_PAIR);
+        return $this->belongsTo(Schedule::class, 'schedule_id');
     }
 }

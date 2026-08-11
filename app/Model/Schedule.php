@@ -2,24 +2,25 @@
 
 namespace Model;
 
-class Schedule
+use Illuminate\Database\Eloquent\Model;
+
+class Schedule extends Model
 {
-    private static $db;
+    protected $table = 'schedule';
+    protected $primaryKey = 'schedule_id';
+    public $timestamps = false;
 
-    public static function setDb($db)
-    {
-        self::$db = $db;
-    }
+    protected $fillable = [
+        'date_of_lesson',
+        'lesson_number',
+        'classroom',
+        'lesson_type',
+        'syllabus_id',
+        'user_id'
+    ];
 
-    public static function getLastBySyllabus($syllabusId)
+    public function syllabus()
     {
-        $stmt = self::$db->prepare("
-            SELECT * FROM schedule 
-            WHERE syllabus_id = ? 
-            ORDER BY date_of_lesson DESC, lesson_number DESC 
-            LIMIT 1
-        ");
-        $stmt->execute([$syllabusId]);
-        return $stmt->fetch(\PDO::FETCH_ASSOC);
+        return $this->belongsTo(Syllabus::class, 'syllabus_id');
     }
 }

@@ -1,26 +1,36 @@
 <?php
 
 use Src\Route;
+
 // Авторизация и главная страница
-Route::add('GET', '/', [Controller\Site::class, 'index'])
+Route::add('GET', '/', [Controller\DeaneryController::class, 'index'])
     ->middleware('auth');
-Route::add(['GET', 'POST'], '/login', [Controller\Site::class, 'login']);
-Route::add('GET', '/logout', [Controller\Site::class, 'logout']);
+Route::add(['GET', 'POST'], '/login', [Controller\AuthController::class, 'login']);
+Route::add(['GET', 'POST'], '/hello', [Controller\Site::class, 'hello']);
+Route::add('GET', '/logout', [Controller\AuthController::class, 'logout']);
+
+// Панель сотрудника деканата
+Route::add('GET', '/dashboard', [Controller\DeaneryController::class, 'index'])->middleware('auth');
 
 // Администратор (добавление сотрудника)
-Route::add(['GET', 'POST'], '/signup', [Controller\Site::class, 'signup']);
+Route::add(['GET', 'POST'], '/signup', [Controller\AdminController::class, 'signup']);
 
-// Сотрудник деканата
-Route::add('GET', '/grades', [Controller\Site::class, 'grades'])->middleware('auth');
+// Управление группами
+Route::add(['GET', 'POST'], '/groups/add', [Controller\DeaneryController::class, 'addGroup'])->middleware('auth');
+Route::add(['GET', 'POST'], '/groups/add-discipline', [Controller\DeaneryController::class, 'addDisciplineToGroup'])->middleware('auth');
 
-// Выбор успеваемости студента (с указанием часов и контроля)
-Route::add('GET', '/grades/student', [Controller\Site::class, 'gradeStudent'])->middleware('auth');
+// Управление дисциплинами
+Route::add(['GET', 'POST'], '/subjects/add', [Controller\DeaneryController::class, 'addSubject'])->middleware('auth');
 
-// Выбор успеваемости группы (по группам и дисциплинам)
-Route::add('GET', '/grades/group', [Controller\Site::class, 'gradeGroup'])->middleware('auth');
+// Управление студентами
+Route::add(['GET', 'POST'], '/students/add', [Controller\DeaneryController::class, 'addStudent'])->middleware('auth');
+Route::add(['GET', 'POST'], '/students/attach', [Controller\DeaneryController::class, 'attachStudent'])->middleware('auth');
 
-// Выбор вида контроля
-Route::add('GET', '/grades/control', [Controller\Site::class, 'setControl'])->middleware('auth');
+// Успеваемость
+Route::add('GET', '/grades', [Controller\GradeController::class, 'index'])->middleware('auth');
+Route::add('GET', '/grades/student', [Controller\GradeController::class, 'gradeStudent'])->middleware('auth');
+Route::add(['GET', 'POST'], '/grades/group', [Controller\GradeController::class, 'gradeGroup'])->middleware('auth');
+Route::add('GET', '/grades/set-control', [Controller\GradeController::class, 'index'])->middleware('auth');
 
-// Просмотр дисциплины + Указание курса/семестра
-Route::add('GET', '/disciplines/semestr', [Controller\Site::class, 'disciplinesBySemestr'])->middleware('auth');
+// Дисциплины: указание курса/семестра
+Route::add('GET', '/disciplines/semestr', [Controller\GradeController::class, 'disciplinesBySemestr'])->middleware('auth');

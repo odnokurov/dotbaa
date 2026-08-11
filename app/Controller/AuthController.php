@@ -6,7 +6,7 @@ use Model\Post;
 use Src\View;
 use Src\Request;
 use Src\Auth\Auth;
-class Site
+class AuthController
 {
     public function login(Request $request): string
     {

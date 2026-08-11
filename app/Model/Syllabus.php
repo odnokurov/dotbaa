@@ -2,63 +2,55 @@
 
 namespace Model;
 
-class Syllabus
+use Illuminate\Database\Eloquent\Model;
+
+class Syllabus extends Model
 {
-    private static $db;
+    protected $table = 'syllabus';
+    protected $primaryKey = 'syllabus_id';
+    public $timestamps = false;
 
-    public static function setDb($db)
+    protected $fillable = [
+        'course',
+        'semestr',
+        'group_id',
+        'subject_id',
+        'number_of_hours',
+        'controll_id'
+    ];
+
+    public function group()
     {
-        self::$db = $db;
+        return $this->belongsTo(Group::class, 'group_id');
     }
 
-    public static function create($data)
+    public function subject()
     {
-        $stmt = self::$db->prepare("
-            INSERT INTO syllabus (course, semestr, group_id, subject_id, number_of_hours, control_id) 
-            VALUES (?, ?, ?, ?, ?, ?)
-        ");
-        return $stmt->execute([
-            $data['course'],
-            $data['semestr'],
-            $data['group_id'],
-            $data['subject_id'],
-            $data['hours'] ?? null,
-            $data['control_id'] ?? null
-        ]);
+        return $this->belongsTo(Subject::class, 'subject_id');
     }
 
-    public static function updateSemester($syllabusId, $course, $semestr)
+    public function typeOfControll()
     {
-        $stmt = self::$db->prepare("UPDATE syllabus SET course = ?, semestr = ? WHERE syllabus_id = ?");
-        return $stmt->execute([$course, $semestr, $syllabusId]);
+        return $this->belongsTo(TypeOfControll::class, 'controll_id');
     }
 
-    public static function updateControl($syllabusId, $controlId)
+    public function schedules()
     {
-        $stmt = self::$db->prepare("UPDATE syllabus SET control_id = ? WHERE syllabus_id = ?");
-        return $stmt->execute([$controlId, $syllabusId]);
+        return $this->hasMany(Schedule::class, 'syllabus_id');
     }
 
-    public static function getByGroupAndSubject($groupId, $subjectId)
+    // Указывает курс/семестр для дисциплины группы
+    public function updateSemester($course, $semestr)
     {
-        $stmt = self::$db->prepare("
-            SELECT * FROM syllabus 
-            WHERE group_id = ? AND subject_id = ?
-        ");
-        $stmt->execute([$groupId, $subjectId]);
-        return $stmt->fetch(\PDO::FETCH_ASSOC);
+        $this->course = $course;
+        $this->semestr = $semestr;
+        return $this->save();
     }
 
-    public static function getAllWithDetails()
+    // Указывает вид контроля для дисциплины группы
+    public function updateControl($controllId)
     {
-        $stmt = self::$db->query("
-            SELECT sy.*, g.group_name, s.subject_name, tc.control_name
-            FROM syllabus sy
-            JOIN groups g ON sy.group_id = g.group_id
-            JOIN subjects s ON sy.subject_id = s.subject_id
-            LEFT JOIN type_of_control tc ON sy.control_id = tc.control_id
-            ORDER BY g.group_name, s.subject_name
-        ");
-        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        $this->controll_id = $controllId;
+        return $this->save();
     }
 }
