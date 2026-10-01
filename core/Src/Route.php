@@ -55,7 +55,8 @@ class Route
 
     public function redirect(string $url): void
     {
-        header('Location: ' . $this->getUrl($url));
+        header('Location: ' . $this->getUrl($url), true, 303); // 303 = See Other
+        exit;
     }
 
     public function getUrl(string $url): string

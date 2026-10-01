@@ -46,6 +46,38 @@ class GradeController
             'groupId' => $groupId
         ]);
     }
+    // Указание вида контроля
+    public function setControl(Request $request): string
+    {
+        $groupId = $request->get('group_id');
+        $syllabuses = [];
+
+        // Сохранение вида контроля
+        if ($request->method === 'POST') {
+            foreach ($request->get('controll_id') ?? [] as $syllabusId => $controlId) {
+                if (!$controlId) {
+                    continue;
+                }
+                $syllabus = Syllabus::find($syllabusId);
+                if ($syllabus) {
+                    $syllabus->updateControl($controlId);
+                }
+            }
+        }
+
+        if ($groupId) {
+            $syllabuses = Syllabus::where('group_id', $groupId)
+                ->with(['subject', 'typeOfControll'])
+                ->get();
+        }
+
+        return (string) new View('site.grades.set_control', [
+            'groups' => Group::all(),
+            'controls' => TypeOfControll::all(),
+            'syllabuses' => $syllabuses,
+            'groupId' => $groupId
+        ]);
+    }
 
     // Выбор успеваемости студента (С указанием общего кол-ва часов и вида контроля)
     public function gradeStudent(Request $request): string

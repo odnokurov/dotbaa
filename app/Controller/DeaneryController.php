@@ -8,6 +8,8 @@ use Model\Subject;
 use Model\Syllabus;
 use Src\View;
 use Src\Request;
+use Src\Validator\Validator;
+use Model\TypeOfControll;
 
 class DeaneryController
 {
@@ -199,5 +201,36 @@ class DeaneryController
             'students' => Student::all(),
             'groups' => Group::all()
         ]);
+    }
+    // Список видов контроля
+    public function controls(): string
+    {
+        $controls = TypeOfControll::all();
+        return (string) new View('site.deanery.controls', ['controls' => $controls]);
+    }
+
+// Добавление вида контроля
+    public function addControl(Request $request): string
+    {
+        if ($request->method === 'POST') {
+            $validator = new Validator($request->all(), [
+                'controll_name' => ['required', 'unique:type_of_controll,controll_name']
+            ], [
+                'required' => 'Поле :field обязательно',
+                'unique' => 'Такой вид контроля уже существует'
+            ]);
+
+            if ($validator->fails()) {
+                return (string) new View('deanery.add_control', [
+                    'message' => json_encode($validator->errors(), JSON_UNESCAPED_UNICODE)
+                ]);
+            }
+
+            TypeOfControll::create($request->all());
+            app()->route->redirect('/controls');
+            return '';
+        }
+
+        return (string) new View('site.deanery.add_control');
     }
 }

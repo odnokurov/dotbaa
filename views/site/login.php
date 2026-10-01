@@ -6,7 +6,7 @@
     <?php endif; ?>
 
     <?php if (!app()->auth::check()): ?>
-        <form method="post">
+        <form method="post" action="<?= app()->route->getUrl('/login') ?>">
             <input name="csrf_token" type="hidden" value="<?= app()->auth::generateCSRF() ?>"/>
             <div class="mb-3">
                 <label class="form-label">Логин</label>

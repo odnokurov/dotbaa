@@ -3,11 +3,11 @@
 use Src\Route;
 
 // Авторизация и главная страница
-Route::add('GET', '/', [Controller\DeaneryController::class, 'index'])
-    ->middleware('auth');
-Route::add(['GET', 'POST'], '/login', [Controller\AuthController::class, 'login']);
-Route::add(['GET', 'POST'], '/hello', [Controller\Site::class, 'hello']);
-Route::add('GET', '/logout', [Controller\AuthController::class, 'logout']);
+Route::add(['GET', 'POST'], '/', [Controller\Site::class, 'login']);
+Route::add(['GET', 'POST'], '/hello', [Controller\Site::class, 'hello'])->middleware('auth');
+Route::add(['GET', 'POST'], '/login', [Controller\Site::class, 'login']);
+Route::add(['GET', 'POST'], '/signup', [Controller\Site::class, 'signup']);
+Route::add('GET', '/logout', [Controller\Site::class, 'logout']);
 
 // Панель сотрудника деканата
 Route::add('GET', '/dashboard', [Controller\DeaneryController::class, 'index'])->middleware('auth');
@@ -21,7 +21,8 @@ Route::add('POST', '/profile/update', [Controller\ProfileController::class, 'pro
 Route::add('GET', '/profile/search', [Controller\ProfileController::class, 'search'])->middleware('auth');
 
 // Администратор (добавление сотрудника)
-Route::add(['GET', 'POST'], '/signup', [Controller\AdminController::class, 'signup']);
+Route::add(['GET', 'POST'], '/admin/signup', [Controller\AdminController::class, 'signup'])
+    ->middleware('auth');
 
 // Управление группами
 Route::add('GET', '/groups', [Controller\DeaneryController::class, 'groups'])->middleware('auth');
@@ -40,7 +41,10 @@ Route::add(['GET', 'POST'], '/students/attach', [Controller\DeaneryController::c
 Route::add('GET', '/grades', [Controller\GradeController::class, 'index'])->middleware('auth');
 Route::add('GET', '/grades/student', [Controller\GradeController::class, 'gradeStudent'])->middleware('auth');
 Route::add(['GET', 'POST'], '/grades/group', [Controller\GradeController::class, 'gradeGroup'])->middleware('auth');
-Route::add('GET', '/grades/set-control', [Controller\GradeController::class, 'index'])->middleware('auth');
+Route::add(['GET', 'POST'], '/grades/set-control', [Controller\GradeController::class, 'setControl'])->middleware('auth');;
 
 // Дисциплины: указание курса/семестра
 Route::add('GET', '/disciplines/semestr', [Controller\GradeController::class, 'disciplinesBySemestr'])->middleware('auth');
+// Виды контроля
+Route::add('GET', '/controls', [Controller\DeaneryController::class, 'controls'])->middleware('auth');
+Route::add(['GET', 'POST'], '/controls/add', [Controller\DeaneryController::class, 'addControl'])->middleware('auth');

@@ -13,9 +13,4 @@ class TypeOfControll extends Model
     protected $fillable = [
         'controll_name'
     ];
-
-    public function syllabuses()
-    {
-        return $this->hasMany(Syllabus::class, 'controll_id');
-    }
 }

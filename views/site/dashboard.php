@@ -47,13 +47,25 @@
     <div class="col-md-6 col-xl-3">
         <div class="card h-100 shadow-sm">
             <div class="card-body">
+                <h5 class="card-title">Виды контроля</h5>
+                <p class="card-text text-muted">Управление видами контроля</p>
+                <?php if ($user->role === 'dean' || $user->role === 'admin'): ?>
+                    <a href="<?= app()->route->getUrl('/controls') ?>" class="btn btn-primary mb-2">Просмотр видов контроля</a>
+                    <a href="<?= app()->route->getUrl('/controls/add') ?>" class="btn btn-outline-primary">Добавить вид контроля</a>
+                <?php endif; ?>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-3">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
                 <h5 class="card-title">Успеваемость</h5>
                 <p class="card-text text-muted">Учет успеваемости студентов</p>
                 <a href="<?= app()->route->getUrl('/grades') ?>" class="btn btn-primary mb-2">Просмотр успеваемости</a>
                 <a href="<?= app()->route->getUrl('/grades/student') ?>" class="btn btn-outline-primary mb-2">Выбор студента</a>
                 <?php if ($user->role === 'dean' || $user->role === 'admin'): ?>
                     <a href="<?= app()->route->getUrl('/grades/group') ?>" class="btn btn-outline-primary mb-2">Успеваемость группы</a>
-                    <a href="<?= app()->route->getUrl('/grades/set-control') ?>" class="btn btn-outline-primary">Вид контроля</a>
                 <?php endif; ?>
             </div>
         </div>
