@@ -19,7 +19,7 @@ class Site
 
     public function hello(): string
     {
-        return new View('site.hello', ['message' => 'hello working']);
+        return (string) new View('site.hello', ['message' => 'hello working']);
     }
 
     public function signup(Request $request): string
@@ -46,13 +46,13 @@ class Site
             }
         }
 
-        return new View('site.signup');
+        return (string) new View('site.signup');
     }
 
-    public function login(Request $request): string
+    public function login(Request $request)
     {
         if ($request->method === 'GET') {
-            return new View('site.login');
+            return (string) new View('site.login');
         }
 
         if (Auth::attempt($request->all())) {
@@ -60,7 +60,7 @@ class Site
             return '';
         }
 
-        return new View('site.login', [
+        return (string) new View('site.login', [
             'message' => 'Неправильные логин или пароль'
         ]);
     }

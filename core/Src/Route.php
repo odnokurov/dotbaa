@@ -98,7 +98,14 @@ class Route
                 $vars[] = Middleware::single()->go($httpMethod, $uri, new Request());
                 $class = $handler[0];
                 $action = $handler[1];
-                call_user_func([new $class, $action], ...$vars);
+                $result = call_user_func([new $class, $action], ...$vars);
+
+                if ($result instanceof \Src\View || $result instanceof \Stringable) {
+                    echo (string) $result;
+                } elseif (is_string($result)) {
+                    echo $result;
+                }
+
                 break;
         }
     }

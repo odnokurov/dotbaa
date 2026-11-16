@@ -10,14 +10,12 @@ use Src\Validator\Validator;
 
 class ProfileController
 {
-    // Просмотр профиля текущего пользователя
     public function profile(Request $request): string
     {
         $user = app()->auth->user();
-        return new View('site.profile_user', ['user' => $user]);
+        return (string) new View('site.profile_user', ['user' => $user]);
     }
 
-    // Форма редактирования профиля
     public function profile_edit(Request $request): string
     {
         $currentUser = app()->auth->user();
@@ -27,10 +25,9 @@ class ProfileController
             return '';
         }
 
-        return new View('site.profile_edit', ['user' => $currentUser]);
+        return (string) new View('site.profile_edit', ['user' => $currentUser]);
     }
 
-    // Обновление профиля + загрузка аватара
     public function profile_update(Request $request): string
     {
         $currentUser = app()->auth->user();
@@ -51,7 +48,7 @@ class ProfileController
         ]);
 
         if ($validator->fails()) {
-            return new View('site.profile_edit', [
+            return (string) new View('site.profile_edit', [
                 'message' => implode('; ', array_map(function ($errors) {
                     return implode(', ', $errors);
                 }, $validator->errors())),
@@ -68,18 +65,13 @@ class ProfileController
             if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] === UPLOAD_ERR_OK) {
                 $file = $_FILES['avatar'];
 
-                // Проверка расширения файла
                 $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
                 $extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
 
-                if (in_array($extension, $allowedExtensions)) {
-                    // Генерация уникального имени файла
-                    $fileName = 'avatar_' . $user->user_id . '_' . time() . '_' . uniqid() . '.' . $extension;
+                if (in_array($extension, $allowedExtensions, true)) {
+                    $fileName = 'avatar_' . $user->user_id . '_' . time() . '_' . bin2hex(random_bytes(6)) . '.' . $extension;
 
-                    // Путь для загрузки
-                    $uploadDir = $_SERVER['DOCUMENT_ROOT'] . '/dotbaa/public/uploads/avatars/';
-
-                    // Создаём директорию, если не существует
+                    $uploadDir = dirname(__DIR__, 2) . '/public/uploads/avatars/';
                     if (!is_dir($uploadDir)) {
                         mkdir($uploadDir, 0777, true);
                     }
@@ -87,19 +79,22 @@ class ProfileController
                     $uploadFile = $uploadDir . $fileName;
 
                     if (move_uploaded_file($file['tmp_name'], $uploadFile)) {
-                        if ($user->avatar && file_exists($_SERVER['DOCUMENT_ROOT'] . '/dotbaa/public' . $user->avatar)) {
-                            unlink($_SERVER['DOCUMENT_ROOT'] . '/dotbaa/public' . $user->avatar);
+                        if (!empty($user->avatar)) {
+                            $old = dirname(__DIR__, 2) . '/public' . $user->avatar;
+                            if (is_file($old)) {
+                                unlink($old);
+                            }
                         }
-                        // Сохраняем путь к новому аватару
                         $data['avatar'] = '/uploads/avatars/' . $fileName;
                     }
                 } else {
-                    return new View('site.profile_edit', [
+                    return (string) new View('site.profile_edit', [
                         'message' => 'Недопустимый формат файла. Разрешены: jpg, jpeg, png, gif, webp',
                         'user' => $user
                     ]);
                 }
             }
+
             $user->update($data);
             app()->route->redirect('/profile/user');
             return '';
@@ -109,7 +104,6 @@ class ProfileController
         return '';
     }
 
-    // Поиск пользователей (сотрудников)
     public function search(Request $request): string
     {
         $query = $request->get('query') ?? '';
@@ -123,7 +117,7 @@ class ProfileController
             ->orderBy('surname')
             ->get();
 
-        return new View('site.profile_search', [
+        return (string) new View('site.profile_search', [
             'users' => $users,
             'query' => $query
         ]);

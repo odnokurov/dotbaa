@@ -1,8 +1,10 @@
 <div class="page-card mx-auto" style="max-width: 560px;">
     <div class="text-center mb-4">
         <?php if ($user->avatar): ?>
-            <img src="<?= app()->route->getUrl($user->avatar) ?>" alt="Аватар"
-                 class="rounded-circle img-thumbnail" style="width: 140px; height: 140px; object-fit: cover;">
+            <img src="<?= htmlspecialchars('/' . ltrim($user->avatar ?? '', '/')) ?>"
+                 alt="Аватар"
+                 class="rounded-circle img-thumbnail"
+                 style="width: 140px; height: 140px; object-fit: cover;">
         <?php else: ?>
             <div class="rounded-circle bg-secondary text-white d-inline-flex align-items-center justify-content-center"
                  style="width: 140px; height: 140px; font-size: 48px;">

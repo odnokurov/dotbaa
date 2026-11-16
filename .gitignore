@@ -4,3 +4,16 @@ composer.lock
 config/db.php
 access.log
 error.log
+composer.phar
+.env
+.env.*
+!.env.example
+*.iml
+Thumbs.db
+Desktop.ini
+.DS_Store
+*.log
+/storage/
+/bootstrap/cache/
+/public/uploads/avatars/*
+!/public/uploads/avatars/.gitkeep

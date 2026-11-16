@@ -18,53 +18,56 @@ class View
         $this->data = $data;
     }
 
-    //Полный путь до директории с представлениями
     private function getRoot(): string
     {
         global $app;
-        $root = $app->settings->getRootPath();
         $path = $app->settings->getViewsPath();
 
-        return $_SERVER['DOCUMENT_ROOT'] . $root . $path;
+        return dirname(__DIR__, 2) . '/' . trim($path, '/');
     }
 
-    //Путь до основного файла с шаблоном сайта
     private function getPathToMain(): string
     {
         return $this->root . $this->layout;
     }
 
-    //Путь до текущего шаблона
     private function getPathToView(string $view = ''): string
     {
         $view = str_replace('.', '/', $view);
-        return $this->getRoot() . "/$view.php";
+        return $this->root . "/$view.php";
     }
 
     public function render(string $view = '', array $data = []): string
     {
+        $view = $view !== '' ? $view : $this->view;
+        $data = $data !== [] ? $data : $this->data;
         $path = $this->getPathToView($view);
 
         if (file_exists($this->getPathToMain()) && file_exists($path)) {
-
-            //Импортирует переменные из массива в текущую таблицу символов
             extract($data, EXTR_PREFIX_SAME, '');
 
-            //Включение буферизации вывода
             ob_start();
             require $path;
-            //Помещаем буфер в переменную и очищаем его
             $content = ob_get_clean();
 
-            //Возвращаем собранную страницу
-            return require($this->getPathToMain());
+            ob_start();
+            $returned = require $this->getPathToMain();
+            $buffered = (string) ob_get_clean();
+
+            if (is_string($returned) && $returned !== '') {
+                return $returned;
+            }
+
+            return $buffered;
         }
-        throw new Exception('Error render');
+
+        throw new Exception(
+            'Error render. view=' . $path . ' layout=' . $this->getPathToMain()
+        );
     }
 
     public function __toString(): string
     {
         return $this->render($this->view, $this->data);
     }
-
 }

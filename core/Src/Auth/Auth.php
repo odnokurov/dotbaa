@@ -36,12 +36,14 @@ class Auth
     }
 
     public static function generateCSRF(): string
-        {
-            $token = md5(time());
-                Session::set('csrf_token', $token);
-            return $token;
+    {
+        $token = Session::get('csrf_token');
+        if (empty($token) || !is_string($token)) {
+            $token = bin2hex(random_bytes(32));
+            Session::set('csrf_token', $token);
         }
-
+        return $token;
+    }
 
     //Возврат текущего аутентифицированного пользователя
     public static function user()
