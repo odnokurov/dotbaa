@@ -13,17 +13,9 @@ class View
 
     public function __construct(string $view = '', array $data = [])
     {
-        $this->root = $this->getRoot();
+        $this->root = dirname(__DIR__, 2) . '/views';
         $this->view = $view;
         $this->data = $data;
-    }
-
-    private function getRoot(): string
-    {
-        global $app;
-        $path = $app->settings->getViewsPath();
-
-        return dirname(__DIR__, 2) . '/' . trim($path, '/');
     }
 
     private function getPathToMain(): string
@@ -33,8 +25,9 @@ class View
 
     private function getPathToView(string $view = ''): string
     {
+        $view = $view !== '' ? $view : $this->view;
         $view = str_replace('.', '/', $view);
-        return $this->root . "/$view.php";
+        return $this->root . '/' . $view . '.php';
     }
 
     public function render(string $view = '', array $data = []): string
@@ -42,8 +35,9 @@ class View
         $view = $view !== '' ? $view : $this->view;
         $data = $data !== [] ? $data : $this->data;
         $path = $this->getPathToView($view);
+        $layout = $this->getPathToMain();
 
-        if (file_exists($this->getPathToMain()) && file_exists($path)) {
+        if (file_exists($layout) && file_exists($path)) {
             extract($data, EXTR_PREFIX_SAME, '');
 
             ob_start();
@@ -51,7 +45,7 @@ class View
             $content = ob_get_clean();
 
             ob_start();
-            $returned = require $this->getPathToMain();
+            $returned = require $layout;
             $buffered = (string) ob_get_clean();
 
             if (is_string($returned) && $returned !== '') {
@@ -61,9 +55,7 @@ class View
             return $buffered;
         }
 
-        throw new Exception(
-            'Error render. view=' . $path . ' layout=' . $this->getPathToMain()
-        );
+        throw new Exception('Error render. view=' . $path . ' layout=' . $layout);
     }
 
     public function __toString(): string
